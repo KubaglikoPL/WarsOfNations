@@ -1,0 +1,23 @@
+# GongEn cmake
+build/
+build_wsl/
+deps/
+
+# Doxygen documentation output
+docs/
+
+# Code - OSS / Visual Studio Code
+.vscode/
+
+# Visual Studio
+.vs/
+out/
+CMakeSettings.json
+
+# CLion
+.idea/
+cmake-build-debug/
+cmake-build-release/
+
+# Other
+old_code/
