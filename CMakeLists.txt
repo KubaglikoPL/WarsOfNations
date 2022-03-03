@@ -70,7 +70,7 @@ endif()
 
 target_compile_definitions(GAME PUBLIC SDL_MAIN_HANDLED)
 target_compile_definitions(GAME PUBLIC WIN32_LEAN_AND_MEAN)
-target_include_directories(GAME PUBLIC "include" "3rd_party")
+target_include_directories(GAME PUBLIC "include" "3rd_party" "src")
 
 if(WIN32)
 	target_link_libraries(GAME imm32 winmm hid setupapi version Ws2_32 Iphlpapi)
