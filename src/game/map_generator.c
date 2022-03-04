@@ -58,9 +58,15 @@ void generateMap(generatedMap* map, generatorSettings* settings, uint32_t width,
 	uint32_t updatePitch = map->width * 4;
 
 	for (uint32_t i = 0; i < (width * height); i++) {
-		updateData[i].r = (map->data[i] * 255.0f);
 		updateData[i].g = 0;
-		updateData[i].b = 0;
+		if (map->data[i] > 0.5f) {
+			updateData[i].r = (map->data[i] * 255.0f);
+			updateData[i].b = 0;
+		}
+		else {
+			updateData[i].r = 0;
+			updateData[i].b = 255;
+		}
 		updateData[i].a = 255;
 	}
 

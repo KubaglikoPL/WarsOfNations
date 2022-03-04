@@ -24,12 +24,12 @@ void ui_render() { nk_sdl_render(NK_ANTI_ALIASING_ON); }
 #include <game/protocol.h>
 #include <game/server_client.h>
 
-char ipBuffer[128] = {NULL};
-char portBuffer[6] = {NULL};
-char portBuffer2[6] = {NULL};
-char widthBuffer[6] = {'6', '0', NULL };
-char heightBuffer[6] = {'4', '0', NULL };
-char usernameBuffer[USERNAME_MAX_LENGHT];
+char ipBuffer[128] = { NULL };
+char portBuffer[6] = "32333";
+char portBuffer2[6] = "32333";
+char widthBuffer[6] = "60";
+char heightBuffer[6] = "40";
+char usernameBuffer[USERNAME_MAX_LENGHT] = "Player1";
 uint16_t port;
 uint32_t mapWidth;
 uint32_t mapHeight;
@@ -47,6 +47,7 @@ bool settingsInitialized = false;
 void ui_generatorSetting();
 void ui_host();
 void ui_join();
+void ui_hosting();
 
 void ui_main() {
 	if (uiState == UI_STATE_INIT) {
@@ -55,16 +56,17 @@ void ui_main() {
 		ui_generatorSetting();
 	}
 	else if (uiState == UI_STATE_HOSTING) {
-
+		ui_hosting();
+		ui_generatorSetting();
 	}
 }
 
 void ui_generatorSetting() {
 	if (!settingsInitialized) {
-		generator_settings.frequency = 0.1f;
-		generator_settings.gain = 0.5f;
-		generator_settings.lacunarity = 2.0f;
-		generator_settings.octaves = 3;
+		generator_settings.frequency = 0.5f;
+		generator_settings.gain = 0.4f;
+		generator_settings.lacunarity = 3.0f;
+		generator_settings.octaves = 5;
 		generator_settings.strenght = 1.0f;
 		settingsInitialized = true;
 	}
@@ -114,6 +116,8 @@ void ui_generatorSetting() {
 }
 
 extern gameServer server;
+extern gameClient client;
+bool selfConnect = true;
 
 void ui_host() {
 	if (nk_begin(ctx, "Host", nk_rect(300, 0, 300, 200),
@@ -125,8 +129,13 @@ void ui_host() {
 		nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, portBuffer2, 6, nk_filter_default);
 		nk_layout_row_dynamic(ctx, 30, 1);
 		uint16_t port = atoi(portBuffer2);
+
+		nk_layout_row_dynamic(ctx, 20, 1);
+		selfConnect = nk_check_label(ctx, "Self Connect", selfConnect);
+
 		if (nk_button_label(ctx, "Host")) {
 			initGameServer(&server, port);
+			if (selfConnect) initGameClient(&client, port, "localhost", usernameBuffer);
 			uiState = UI_STATE_HOSTING;
 		}
 	}
@@ -147,8 +156,31 @@ void ui_join() {
 		nk_layout_row_dynamic(ctx, 30, 2);
 		nk_label(ctx, "Username:", NK_TEXT_ALIGN_LEFT);
 		nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, usernameBuffer, USERNAME_MAX_LENGHT, nk_filter_default);
-		if (nk_button_label(ctx, "Connect")) {
 
+		uint16_t port = atoi(portBuffer);
+
+		if (nk_button_label(ctx, "Connect")) {
+			initGameClient(&client, port, ipBuffer, usernameBuffer);
+		}
+	}
+	nk_end(ctx);
+}
+
+void ui_hosting() {
+	if (nk_begin(ctx, "Hosting", nk_rect(0, 0, 300, 200),
+		NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+		NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
+	{
+		for (uint32_t i = 0; i < MAX_CLIENT_CONNECTIONS; i++) {
+			if (server.connections[i].connectionInfoReceived) {
+				nk_layout_row_dynamic(ctx, 30, 1);
+				nk_label(ctx, server.connections[i].username, NK_TEXT_ALIGN_LEFT);
+			}
+		}
+
+		nk_layout_row_dynamic(ctx, 30, 1);
+		if (nk_button_label(ctx, "Start Game")) {
+			uiState = UI_STATE_GAME;
 		}
 	}
 	nk_end(ctx);

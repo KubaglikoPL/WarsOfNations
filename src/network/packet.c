@@ -20,6 +20,11 @@ void clearPacket(Packet* packet) {
 
 void appendPacketData(Packet* packet, void* data, uint16_t dataSize) {
 	if (packet) {
+		uint32_t dataSizeNeeded = (packet->header.size + dataSize);
+		if (dataSizeNeeded > packet->dataSize) {
+			packet->dataSize = dataSizeNeeded;
+			packet->data = realloc(packet->data, packet->dataSize);
+		}
 		memcpy(&packet->data[packet->header.size], data, dataSize);
 		packet->header.size += dataSize;
 	}
@@ -69,4 +74,11 @@ bool receivePacket(Socket* socket, Packet* packet, uint32_t* recvPtr) {
 		}
 	}
 	return false;
+}
+
+void sendPacketWithData(Socket* socket, Packet* packet, void* data, uint32_t dataSize, uint16_t type) {
+	packet->header.type = type;
+	clearPacket(packet);
+	appendPacketData(packet, data, dataSize);
+	sendPacket(socket, packet);
 }

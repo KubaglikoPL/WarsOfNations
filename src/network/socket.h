@@ -6,6 +6,7 @@
 
 typedef struct Socket {
 	TCPsocket ptr;
+	SDLNet_SocketSet set;
 	IPaddress ip;
 } Socket;
 

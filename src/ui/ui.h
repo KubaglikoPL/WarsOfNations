@@ -19,7 +19,9 @@ void ui_render();
 
 typedef enum {
 	UI_STATE_INIT = 0,
-	UI_STATE_HOSTING = 1
+	UI_STATE_HOSTING = 1,
+	UI_STATE_CONNECTED = 2,
+	UI_STATE_GAME = 3
 } UI_STATE;
 
 extern UI_STATE uiState;

@@ -14,6 +14,7 @@ SDL_Renderer* renderer = NULL;
 generatorSettings generator_settings;
 generatedMap map;
 gameServer server;
+gameClient client;
 
 int main() {
 	//Initialization
@@ -21,8 +22,9 @@ int main() {
 	window = SDL_CreateWindow("Walki Krajuw", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, 0);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 	ui_init(window, renderer);
-	server = createGameServer();
 	init_socket_api();
+	server = createGameServer();
+	client = createGameClient();
 
 	//Main loop
 #ifdef __EMSCRIPTEN__
@@ -40,6 +42,10 @@ void mainLoop() {
 		ui_processEvent(&event);
 	}
 	ui_endInput();
+
+	if (server.serverPort != 0) updateServer(&server);
+	if (client.connected) updateClient(&client);
+
 	ui_newFrame();
 	SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
 	SDL_RenderClear(renderer);

@@ -6,6 +6,7 @@
 
 #define PACKET_HEADER_MAGIC 1347309399 //ASCII 'WONP'
 #define SERVER_ID UINT16_MAX
+#define UNKOWN_CLIENT_ID (UINT16_MAX-1)
 
 #pragma pack(push, 1)
 typedef struct PacketHeader {
@@ -29,3 +30,5 @@ void appendPacketData(Packet* packet, void* data, uint32_t dataSize); //DON'T AU
 
 void sendPacket(Socket* socket, Packet* packet);
 bool receivePacket(Socket* socket, Packet* packet, uint32_t* recvPtr);
+
+void sendPacketWithData(Socket* socket, Packet* packet, void* data, uint32_t dataSize, uint16_t type); //Helper function
