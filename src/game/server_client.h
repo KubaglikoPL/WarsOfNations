@@ -25,6 +25,9 @@ typedef struct {
 	Packet serverPacket;
 	Socket serverSocket;
 	uint16_t serverPort;
+
+	bool gameStarted;
+	bool serverSetuped;
 } gameServer;
 
 gameServer createGameServer();

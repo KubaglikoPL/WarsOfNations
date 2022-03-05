@@ -34,6 +34,7 @@ void updateClient(gameClient* client) {
 }
 
 #include <game/map_generator.h>
+#include <ui/ui.h>
 
 extern generatedMap map;
 
@@ -52,5 +53,8 @@ void clientProcessEvent(gameClient* client, uint16_t type, void* data) {
 		client->client_ready = true; //Temporary
 
 		sendPacketWithData(&client->socket, &client->sendPacket, NULL, 0, CLIENT_READY); //Temporary
+	}
+	if (type == SERVER_START_GAME) {
+		uiState = UI_STATE_GAME;
 	}
 }

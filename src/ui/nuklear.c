@@ -171,6 +171,8 @@ void ui_join() {
 	nk_end(ctx);
 }
 
+bool serverSetuped = false;
+
 void ui_hosting() {
 	if (nk_begin(ctx, "Hosting", nk_rect(0, 0, 300, 200),
 		NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
@@ -179,14 +181,19 @@ void ui_hosting() {
 		for (uint32_t i = 0; i < MAX_CLIENT_CONNECTIONS; i++) {
 			if (server.connections[i].connectionInfoReceived) {
 				nk_layout_row_dynamic(ctx, 30, 1);
-				nk_label(ctx, server.connections[i].username, NK_TEXT_ALIGN_LEFT);
+				if (server.connections[i].playerReady) {
+					nk_labelf(ctx, NK_TEXT_ALIGN_LEFT, "%s(Ready)", server.connections[i].username);
+				}
+				else nk_label(ctx, server.connections[i].username, NK_TEXT_ALIGN_LEFT);
 			}
 		}
 
 		nk_layout_row_dynamic(ctx, 30, 1);
 		if (nk_button_label(ctx, "Start Game")) {
-			serverSetupGame(&server);
-			uiState = UI_STATE_GAME;
+			if (!serverSetuped) {
+				serverSetupGame(&server);
+				serverSetuped = true;
+			}
 		}
 	}
 	nk_end(ctx);

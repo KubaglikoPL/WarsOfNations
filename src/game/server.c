@@ -6,6 +6,8 @@ gameServer createGameServer() {
 	gs.serverPort = 0;
 	gs.serverSocket = createSocket();
 	gs.serverPacket = createPacket(SERVER_ID);
+	gs.gameStarted = false;
+	gs.serverSetuped = false;
 	for (uint32_t i = 0; i < MAX_CLIENT_CONNECTIONS; i++) {
 		gs.connections[i].connected = false;
 		gs.connections[i].remote = false;
@@ -21,6 +23,9 @@ void initGameServer(gameServer* server, uint16_t port) {
 	server->serverPort = port;
 	openServerSocket(&server->serverSocket, port);
 }
+
+#include <ui/ui.h>
+
 void updateServer(gameServer* server) {
 	if (server->nextConnection != MAX_CLIENT_CONNECTIONS) {
 		clientConnection* nextConnection = &server->connections[server->nextConnection];
@@ -36,6 +41,22 @@ void updateServer(gameServer* server) {
 		if (connection->connected && connection->remote) {
 			if (receivePacket(&connection->socket, &connection->packet, &connection->recvPtr)) {
 				serverProcessEvent(server, connection->packet.header.type, connection->packet.data, i, connection->packet.header.id);
+			}
+		}
+	}
+	if ((!server->gameStarted) && server->serverSetuped) {
+		bool allPlayersReady = true;
+		for (uint32_t i = 0; i < MAX_CLIENT_CONNECTIONS; i++) {
+			clientConnection* connection = &server->connections[i];
+			if (connection->connected && connection->remote) {
+				if (!connection->playerReady) allPlayersReady = false;
+			}
+		}
+		if (allPlayersReady) {
+			for (uint32_t i = 0; i < MAX_CLIENT_CONNECTIONS; i++) {
+				clientConnection* connection = &server->connections[i];
+				sendPacketWithData(&connection->socket, &server->serverPacket, NULL, 0, SERVER_START_GAME);
+				uiState = UI_STATE_GAME;
 			}
 		}
 	}
@@ -67,6 +88,8 @@ void serverSetupGame(gameServer* server) {
 			sendPacketWithData(&connection->socket, &server->serverPacket, packetData, packetSize, SERVER_MAP_DATA);
 		}
 	}
+
+	server->serverSetuped = true;
 }
 
 void serverProcessEvent(gameServer* server, uint16_t type, void* data, uint32_t connectionID, uint32_t packetID) {
