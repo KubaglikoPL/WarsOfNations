@@ -34,7 +34,7 @@ void sendPacket(Socket* socket, Packet* packet) {
 	if (socket && packet) {
 		if (socket->ptr) {
 			socketSend(socket, &packet->header, sizeof(PacketHeader));
-			socketSend(socket, packet->data, packet->header.size);
+			if(packet->data) socketSend(socket, packet->data, packet->header.size);
 		}
 	}
 }
@@ -79,6 +79,6 @@ bool receivePacket(Socket* socket, Packet* packet, uint32_t* recvPtr) {
 void sendPacketWithData(Socket* socket, Packet* packet, void* data, uint32_t dataSize, uint16_t type) {
 	packet->header.type = type;
 	clearPacket(packet);
-	appendPacketData(packet, data, dataSize);
+	if(data) appendPacketData(packet, data, dataSize);
 	sendPacket(socket, packet);
 }

@@ -39,6 +39,11 @@ void mainLoop() {
 	SDL_Event event;
 	ui_beginInput();
 	while (SDL_PollEvent(&event)) {
+		if (event.type == SDL_WINDOWEVENT) {
+			if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+				running = false;
+			}
+		}
 		ui_processEvent(&event);
 	}
 	ui_endInput();

@@ -24,16 +24,16 @@ void ui_render() { nk_sdl_render(NK_ANTI_ALIASING_ON); }
 #include <game/protocol.h>
 #include <game/server_client.h>
 
-char ipBuffer[128] = { NULL };
+char ipBuffer[128] = "localhost";
 char portBuffer[6] = "32333";
 char portBuffer2[6] = "32333";
-char widthBuffer[6] = "60";
-char heightBuffer[6] = "40";
+char widthBuffer[6] = "120";
+char heightBuffer[6] = "80";
 char usernameBuffer[USERNAME_MAX_LENGHT] = "Player1";
 uint16_t port;
 uint32_t mapWidth;
 uint32_t mapHeight;
-bool mapAutoGenerate = false;
+bool mapAutoGenerate = true;
 
 #define NUMBER_INPUT_BUFFER_SIZE 16
 
@@ -48,6 +48,7 @@ void ui_generatorSetting();
 void ui_host();
 void ui_join();
 void ui_hosting();
+void ui_connected();
 
 void ui_main() {
 	if (uiState == UI_STATE_INIT) {
@@ -59,11 +60,14 @@ void ui_main() {
 		ui_hosting();
 		ui_generatorSetting();
 	}
+	else if (uiState == UI_STATE_CONNECTED) {
+		ui_connected();
+	}
 }
 
 void ui_generatorSetting() {
 	if (!settingsInitialized) {
-		generator_settings.frequency = 0.5f;
+		generator_settings.frequency = 0.75f;
 		generator_settings.gain = 0.4f;
 		generator_settings.lacunarity = 3.0f;
 		generator_settings.octaves = 5;
@@ -161,6 +165,7 @@ void ui_join() {
 
 		if (nk_button_label(ctx, "Connect")) {
 			initGameClient(&client, port, ipBuffer, usernameBuffer);
+			uiState = UI_STATE_CONNECTED;
 		}
 	}
 	nk_end(ctx);
@@ -180,7 +185,33 @@ void ui_hosting() {
 
 		nk_layout_row_dynamic(ctx, 30, 1);
 		if (nk_button_label(ctx, "Start Game")) {
+			serverSetupGame(&server);
 			uiState = UI_STATE_GAME;
+		}
+	}
+	nk_end(ctx);
+}
+
+void ui_connected() {
+	if (nk_begin(ctx, "Hosting", nk_rect(0, 0, 300, 200),
+		NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+		NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
+	{
+		nk_layout_row_dynamic(ctx, 30, 1);
+		nk_label(ctx, "Connected waiting for game to start", NK_TEXT_ALIGN_LEFT);
+
+		nk_layout_row_dynamic(ctx, 30, 1);
+		nk_check_label(ctx, "Tile Data", client.mapData1_received);
+		
+		nk_layout_row_dynamic(ctx, 30, 1);
+		nk_check_label(ctx, "Other Map Data", client.mapData2_received);
+
+		nk_layout_row_dynamic(ctx, 30, 1);
+		nk_check_label(ctx, "Player Data", client.playerData_received);
+
+		if (client.client_ready) {
+			nk_layout_row_dynamic(ctx, 30, 1);
+			nk_label(ctx, "Waiting for players", NK_TEXT_ALIGN_LEFT);
 		}
 	}
 	nk_end(ctx);

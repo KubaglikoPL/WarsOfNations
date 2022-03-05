@@ -8,6 +8,10 @@ gameClient createGameClient() {
 	c.receivePacket = createPacket(UNKOWN_CLIENT_ID);
 	c.connected = false;
 	c.recvPtr = 0;
+	c.mapData1_received = false;
+	c.mapData2_received = false;
+	c.playerData_received = false;
+	c.client_ready = false;
 	return c;
 }
 
@@ -29,10 +33,24 @@ void updateClient(gameClient* client) {
 	}
 }
 
-void clientProcessEvent(gameClient* client, uint16_t type, void* data) {
-	if (type == SERVER_CONNECTION_INFO_RESPONSE) {
-		ServerConnectionInfoResponsePacket* info = data;
+#include <game/map_generator.h>
 
+extern generatedMap map;
+
+void clientProcessEvent(gameClient* client, uint16_t type, void* data) {
+	uint8_t* _data = data;
+	if (type == SERVER_CONNECTION_INFO_RESPONSE) {
+		ServerConnectionInfoResponsePacket* info = _data;
 		client->sendPacket.header.id = info->clientID;
+	}
+	if (type == SERVER_MAP_DATA) {
+		ServerMapDataPacket* info = _data;
+		mapTile* tileData = &_data[sizeof(ServerMapDataPacket)];
+		loadMap(&map, info->mapWidth, info->mapHeight, tileData);
+
+		client->mapData1_received = true;
+		client->client_ready = true; //Temporary
+
+		sendPacketWithData(&client->socket, &client->sendPacket, NULL, 0, CLIENT_READY); //Temporary
 	}
 }

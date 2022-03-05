@@ -13,6 +13,7 @@ gameServer createGameServer() {
 		gs.connections[i].socket = createSocket();
 		gs.connections[i].connectionInfoReceived = false;
 		gs.connections[i].recvPtr = 0;
+		gs.connections[i].playerReady = false;
 	}
 	return gs;
 }
@@ -40,6 +41,34 @@ void updateServer(gameServer* server) {
 	}
 }
 
+#include <game/map_generator.h>
+
+extern generatedMap map;
+extern uint32_t mapWidth;
+extern uint32_t mapHeight;
+extern generatorSettings generator_settings;
+
+void serverSetupGame(gameServer* server) {
+	//If map not generated generate it
+	if(map.width == 0) generateMap(&map, &generator_settings, mapWidth, mapHeight);
+	//Prepare map data1
+	uint32_t packetSize = (map.width * map.height * sizeof(mapTile)) + sizeof(ServerMapDataPacket);
+	uint8_t* packetData = alloca(packetSize);
+	ServerMapDataPacket* packetInfo = packetData;
+	mapTile* tileData = &packetData[sizeof(ServerMapDataPacket)];
+	packetInfo->mapWidth = map.width;
+	packetInfo->mapHeight = map.height;
+	SDL_memcpy(tileData, map.tileData, (packetSize - sizeof(ServerMapDataPacket)));
+
+	//Send Map data to all clients
+	for (uint32_t i = 0; i < MAX_CLIENT_CONNECTIONS; i++) {
+		clientConnection* connection = &server->connections[i];
+		if (connection->connectionInfoReceived) {
+			sendPacketWithData(&connection->socket, &server->serverPacket, packetData, packetSize, SERVER_MAP_DATA);
+		}
+	}
+}
+
 void serverProcessEvent(gameServer* server, uint16_t type, void* data, uint32_t connectionID, uint32_t packetID) {
 	if ((type == CLIENT_CONNECTION_INFO) && (packetID == UNKOWN_CLIENT_ID)) {
 		ClientConnectionInfoPacket* info = data;
@@ -52,6 +81,11 @@ void serverProcessEvent(gameServer* server, uint16_t type, void* data, uint32_t 
 			responce.valid = true;
 
 			sendPacketWithData(&server->connections[connectionID].socket, &server->serverPacket, &responce, sizeof(ServerConnectionInfoResponsePacket), SERVER_CONNECTION_INFO_RESPONSE);
+		}
+	}
+	if (packetID != SERVER_ID) {
+		if (type == CLIENT_READY) {
+			server->connections[connectionID].playerReady = true;
 		}
 	}
 }
