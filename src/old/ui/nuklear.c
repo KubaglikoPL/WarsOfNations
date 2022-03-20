@@ -1,4 +1,5 @@
 #include "ui.h"
+#undef _DEBUG
 #define NK_IMPLEMENTATION
 #include <nuklear.h>
 #define NK_SDL_RENDERER_IMPLEMENTATION
@@ -21,8 +22,8 @@ void ui_processEvent(SDL_Event* event) { nk_sdl_handle_event(event); }
 void ui_endInput() { nk_input_end(ctx); }
 void ui_render() { nk_sdl_render(NK_ANTI_ALIASING_ON); }
 
-#include <game/protocol.h>
-#include <game/server_client.h>
+#include <network/protocol.h>
+#include <network/server_client.h>
 
 char ipBuffer[128] = "localhost";
 char portBuffer[6] = "32333";

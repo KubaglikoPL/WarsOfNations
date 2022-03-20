@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2)
-project(GAME CXX C)
+project(GAME C)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(DEBUG_BUILD ON)
@@ -21,10 +21,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-file(GLOB_RECURSE game_src "src/*.c" "src/*.cpp" "include/*.h" "3rd_party/*.c")
+#file(GLOB_RECURSE game_src "src/*.c" "src/*.cpp" "include/*.h" "3rd_party/*.c")
+file(GLOB engine_src "src/engine/*.c")
+file(GLOB game_src "src/main.c" "src/game/*.c")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
+add_library(Engine SHARED ${engine_src})
 add_executable(GAME ${game_src})
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -33,10 +36,6 @@ endif()
 
 if(NOT SDL2_FETCH_CONTENT_VERSION)
 	set(SDL2_FETCH_CONTENT_VERSION release-2.0.20)
-endif()
-
-if(NOT LIBWEBSOCKETS_FETCH_CONTENT_VERSION)
-	set(LIBWEBSOCKETS_FETCH_CONTENT_VERSION v4.3.1)
 endif()
 
 if(NOT EMSCRIPTEN)
@@ -72,6 +71,12 @@ target_compile_definitions(GAME PUBLIC SDL_MAIN_HANDLED)
 target_compile_definitions(GAME PUBLIC WIN32_LEAN_AND_MEAN)
 target_include_directories(GAME PUBLIC "include" "3rd_party" "src")
 
+target_compile_definitions(Engine PUBLIC SDL_MAIN_HANDLED)
+target_compile_definitions(Engine PUBLIC WIN32_LEAN_AND_MEAN)
+target_compile_definitions(Engine PUBLIC DLL_EXPORT)
+target_include_directories(Engine PUBLIC "include" "3rd_party" "src")
+target_link_libraries(GAME Engine)
+
 if(WIN32)
 	target_link_libraries(GAME imm32 winmm hid setupapi version Ws2_32 Iphlpapi)
 endif(WIN32)
@@ -84,4 +89,6 @@ if(WIN32)
 		endif()
 	endif()
 endif(WIN32)
+
+add_custom_command(TARGET GAME POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data)
 

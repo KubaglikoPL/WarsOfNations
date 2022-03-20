@@ -27,3 +27,6 @@ typedef enum {
 extern UI_STATE uiState;
 
 void ui_main();
+
+//UI functions
+//void ui_selectCapital();
