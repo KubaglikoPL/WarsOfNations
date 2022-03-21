@@ -21,13 +21,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-#file(GLOB_RECURSE game_src "src/*.c" "src/*.cpp" "include/*.h" "3rd_party/*.c")
-file(GLOB engine_src "src/engine/*.c")
-file(GLOB game_src "src/main.c" "src/game/*.c")
+file(GLOB_RECURSE game_src "src/*.c" "src/*.cpp" "include/*.h" "3rd_party/*.c")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-
-add_library(Engine SHARED ${engine_src})
 add_executable(GAME ${game_src})
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -70,12 +65,6 @@ endif()
 target_compile_definitions(GAME PUBLIC SDL_MAIN_HANDLED)
 target_compile_definitions(GAME PUBLIC WIN32_LEAN_AND_MEAN)
 target_include_directories(GAME PUBLIC "include" "3rd_party" "src")
-
-target_compile_definitions(Engine PUBLIC SDL_MAIN_HANDLED)
-target_compile_definitions(Engine PUBLIC WIN32_LEAN_AND_MEAN)
-target_compile_definitions(Engine PUBLIC DLL_EXPORT)
-target_include_directories(Engine PUBLIC "include" "3rd_party" "src")
-target_link_libraries(GAME Engine)
 
 if(WIN32)
 	target_link_libraries(GAME imm32 winmm hid setupapi version Ws2_32 Iphlpapi)

@@ -1,4 +1,4 @@
-#include "game_data.h"
+#include <game/game_data.h>
 
 ageInfo ages[] = {
 	{ PREHISTORY_AGE, "Prehistory" },

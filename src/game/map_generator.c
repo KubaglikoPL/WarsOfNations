@@ -1,4 +1,4 @@
-#include "map_generator.h"
+#include <game/map_generator.h>
 #define FNL_IMPL
 #include <FastNoiseLite.h>
 #include <malloc.h>

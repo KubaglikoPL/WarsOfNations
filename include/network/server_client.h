@@ -1,6 +1,6 @@
 #pragma once
 
-#include <network/packet.h>
+#include <framework/packet.h>
 #include "protocol.h"
 
 #define MAX_CLIENT_CONNECTIONS 16

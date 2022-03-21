@@ -10,7 +10,7 @@ typedef struct Socket {
 	IPaddress ip;
 } Socket;
 
-void init_socket_api();
+void initSocketApi();
 
 Socket createSocket();
 bool openServerSocket(Socket* socket, uint16_t port);

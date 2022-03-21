@@ -1,6 +1,17 @@
 #pragma once
 
-#include <SDL.h>
+#include <stdint.h>
+
+typedef enum {
+	UI_STATE_INIT = 0,
+	UI_STATE_HOSTING = 1,
+	UI_STATE_CONNECTED = 2,
+	UI_STATE_GAME = 3
+} UI_STATE;
+
+extern UI_STATE uiState;
+
+/*#include <SDL.h>
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
@@ -17,16 +28,7 @@ void ui_processEvent(SDL_Event* event);
 void ui_endInput();
 void ui_render();
 
-typedef enum {
-	UI_STATE_INIT = 0,
-	UI_STATE_HOSTING = 1,
-	UI_STATE_CONNECTED = 2,
-	UI_STATE_GAME = 3
-} UI_STATE;
-
-extern UI_STATE uiState;
-
-void ui_main();
+void ui_main();*/
 
 //UI functions
 //void ui_selectCapital();

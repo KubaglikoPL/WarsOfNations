@@ -1,4 +1,4 @@
-#include "server_client.h"
+#include <network/server_client.h>
 
 gameClient createGameClient() {
 	gameClient c;

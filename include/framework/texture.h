@@ -1,8 +1,10 @@
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <SDL.h>
+#include "renderer.h"
+
+#define Texture SDL_Texture*
+Texture createTexture(uint32_t w, uint32_t h);
+void updateTexture(Renderer renderer, Texture texture, uint32_t x, uint32_t y, uint32_t w, uint32_t h, void* data);
 
 typedef struct {
 	uint32_t id;
@@ -11,8 +13,8 @@ typedef struct {
 
 typedef struct {
 	uint32_t size;
-	SDL_Texture* texture;
-	SDL_Renderer* renderer;
+	Texture texture;
+	Renderer renderer;
 	subTexture* subTextures;
 	uint32_t subTexturesAmount;
 } texture;
@@ -29,7 +31,7 @@ typedef struct {
 	float h;
 } txCoord;
 
-texture createTexture(SDL_Renderer *renderer, uint32_t size);
+texture createTexture2(Renderer *renderer, uint32_t size);
 bool loadTextures(texture *texture, textureLoadInfo *loadInfos, uint32_t loadInfosAmount);
 txCoord getTextureCoords(texture* texture, uint32_t subTextureID, uint32_t x, uint32_t y);
 subTexture getSubTexture(texture* texture, uint32_t subTextureID);

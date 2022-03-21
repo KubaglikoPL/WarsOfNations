@@ -1,6 +1,6 @@
-#include "socket.h"
+#include <framework/socket.h>
 
-void init_socket_api() {
+void initSocketApi() {
 	SDLNet_Init();
 }
 
