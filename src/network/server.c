@@ -24,7 +24,7 @@ void initGameServer(gameServer* server, uint16_t port) {
 	openServerSocket(&server->serverSocket, port);
 }
 
-#include <ui/ui.h>
+#include <ui/game_ui.h>
 
 void updateServer(gameServer* server) {
 	if (server->nextConnection != MAX_CLIENT_CONNECTIONS) {

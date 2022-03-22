@@ -34,7 +34,7 @@ void updateClient(gameClient* client) {
 }
 
 #include <game/map_generator.h>
-#include <ui/ui.h>
+#include <ui/game_ui.h>
 
 extern generatedMap map;
 

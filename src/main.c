@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "ui/ui.h"
+#include <ui/game_ui.h>
 #include <network/server_client.h>
 #include <game/map_generator.h>
 #include <framework/texture.h>

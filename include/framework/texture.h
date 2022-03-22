@@ -2,10 +2,6 @@
 
 #include "renderer.h"
 
-#define Texture SDL_Texture*
-Texture createTexture(uint32_t w, uint32_t h);
-void updateTexture(Renderer renderer, Texture texture, uint32_t x, uint32_t y, uint32_t w, uint32_t h, void* data);
-
 typedef struct {
 	uint32_t id;
 	uint32_t x, y, w, h;
