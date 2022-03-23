@@ -21,7 +21,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-file(GLOB_RECURSE game_src "src/*.c" "src/*.cpp" "include/*.h" "3rd_party/*.c")
+file(GLOB_RECURSE game_src "src/*.c" "src/*.cpp" "include/*.h" "3rd_party/stb.c")
 
 add_executable(GAME ${game_src})
 

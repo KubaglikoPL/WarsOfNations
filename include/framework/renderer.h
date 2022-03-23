@@ -8,8 +8,9 @@
 #define Renderer SDL_Renderer*
 
 #define Texture SDL_Texture*
-Texture createTexture(uint32_t w, uint32_t h);
-void updateTexture(Renderer renderer, Texture texture, uint32_t x, uint32_t y, uint32_t w, uint32_t h, void* data);
+Texture createTexture(Renderer renderer, uint32_t w, uint32_t h);
+void updateTexture(Texture texture, uint32_t x, uint32_t y, uint32_t w, uint32_t h, void* data);
+void destroyTexture(Texture texture);
 
 #pragma pack(push, 1)
 typedef struct {

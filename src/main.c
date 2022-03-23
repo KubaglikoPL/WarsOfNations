@@ -10,7 +10,7 @@
 void mainLoop();
 
 bool running = true;
-SDL_Window* window = NULL;
+Window* window = NULL;
 Renderer renderer = NULL;
 
 generatorSettings generator_settings;
@@ -26,6 +26,13 @@ int main() {
 	initSocketApi();
 	server = createGameServer();
 	client = createGameClient();
+	generator_settings.frequency = 1.0f;
+	generator_settings.gain = 0.5f;
+	generator_settings.lacunarity = 2.0f;
+	generator_settings.octaves = 8;
+	generator_settings.strenght = 1.0f;
+	generateMap(&map, &generator_settings, 80, 60);
+	loadMap(&map, map.width, map.height, map.tileData);
 
 	//Main loop
 #ifdef __EMSCRIPTEN__

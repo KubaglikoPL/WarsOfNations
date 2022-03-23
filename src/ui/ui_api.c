@@ -1,93 +1,62 @@
 #include "ui_api.h"
+#include <stb_sprintf.h>
 
-uiVec2_t uiVec2(float x, float y) {
-	uiVec2_t v;
-	v.x = x;
-	v.y = y;
-	return v;
+Texture fontTexture;
+uint32_t textureCharWidth;
+uint32_t textureWidth;
+uint32_t textureHeight;
+float tx_charSizeX;
+float tx_charSizeY;
+
+void setFontTexture(Texture texture, uint32_t textureWidth, uint32_t textureHeight) {
+	fontTexture = texture;
+	textureCharWidth = textureWidth / CHAR_WIDTH;
+	textureWidth = textureWidth;
+	textureHeight = textureHeight;
+	tx_charSizeX = CHAR_WIDTH / (float)textureWidth;
+	tx_charSizeY = CHAR_WIDTH / (float)textureHeight;
 }
 
-uiVec4_t uiVec4(float r, float g, float b, float a) {
-	uiVec4_t v;
-	v.r = r;
-	v.g = g;
-	v.b = b;
-	v.a = a;
-	return v;
-}
+float textf(float x, float y, float ySize, const char* fmt, ...) {
+	va_list va;
+	va_start(va, fmt);
+	uint32_t textf_size = stbsp_vsnprintf(NULL, 0, fmt, va);
+	char* textf_buf = alloca(textf_size + 1);
+	stbsp_vsnprintf(textf_buf, textf_size, fmt, va);
+	va_end(va);
 
-uiRect2_t uiRect2(uiVec2_t pos, uiVec2_t size) {
-	uiRect2_t r;
-	r.pos = pos;
-	r.size = size;
-	return r;
-}
+	vertex* verticies = alloca(textf_size * sizeof(vertex) * 4);
+	uint32_t* indicies = alloca(textf_size * sizeof(uint32_t) * 6);
+	uint32_t i2 = 0;
+	float char_x = x;
+	//float 
 
-uiApiContext uiContextInit(uiVec2_t displaySize, uiVec2_t uiSize) {
-	uiApiContext ctx;
-	uiSetCoordinateRelative(&ctx, true);
-	uiSetPercentCoordinates(&ctx, true);
-	uiSetStyle(&ctx, uiGetDefaultStyle(&ctx));
-	uiSetTextColor(&ctx, uiVec4(1, 1, 1, 1));
-	return ctx;
-}
+	for (uint32_t i = 0; i < textf_size; i++) {
+		char c = textf_buf[i];
+		uint32_t charID = UINT32_MAX;
+		bool extendedChar = false;
+		if (CHAR_IS_ASCII(c)) {
+			if (CHAR_PRINTABLE(c)) {
+				charID = ASCII_TO_CHAR_ID(c);
+			}
+		}
+		else {
+			//TODO
+		}
 
-void uiNewFrame(uiApiContext* ctx) {
+		float tx_x = 0.0f;
+		float tx_y = 0.0f;
+		if (charID != UINT32_MAX) {
+			if (!extendedChar) {
+				uint32_t x = (charID % textureCharWidth);
+				uint32_t y = (charID / textureCharWidth);
+				tx_x = (x * CHAR_WIDTH) / (float)textureWidth;
+				tx_y = (y * CHAR_HEIGHT) / (float)textureHeight;
 
-}
+				verticies[i2 + 0].x = 
 
-void uiSetCoordinateRelative(uiApiContext* ctx, bool enabled) {
-	ctx->relativeCoordinates = enabled;
-}
-
-void uiSetPercentCoordinates(uiApiContext* ctx, bool enabled) {
-	ctx->percentCoordinates = enabled;
-}
-
-uiStyle uiGetDefaultStyle(uiApiContext* ctx) {
-
-}
-void uiSetStyle(uiApiContext* ctx, uiStyle style) {
-	ctx->style = style;
-}
-void uiSetTextColor(uiApiContext* ctx, uiVec4_t color) {
-	ctx->textColor = color;
-}
-
-uint32_t uiWindow(uiApiContext* ctx, uiVec2_t pos, uiVec2_t size) {
-
-}
-void uiEndWindow(uiApiContext* ctx) {
-	ctx->windowPos = uiVec2(0, 0);
-	ctx->windowSize = uiVec2(0, 0);
-	ctx->insideWindow = false;
-}
-
-uint32_t uiText(uiApiContext* ctx, uiVec2_t pos, uint32_t textSize, uiTextPosition position, const char* text) {
-	return uiTextf(ctx, pos, textSize, position, "%s", text);
-}
-
-uint32_t uiTextf(uiApiContext* ctx, uiVec2_t pos, uint32_t textSize, uiTextPosition position, const char* fmt, ...) {
-
-}
-
-uiRect2_t widgetPosAndSize(uint32_t ID) {
-
-}
-bool widgetHovered(uint32_t ID) {
-	uiRect2_t posAndSize = widgetPosAndSize(ID);
-
-}
-bool widgetClicked(uint32_t ID) {
-	return widgetHovered(ID);
-}
-
-uint32_t uiAddWidget(uiApiContext* ctx, uiVec2_t pos, uiVec2_t size) {
-
-}
-uiVec4_t widgetPosition(uiApiContext* ctx, uiVec2_t pos, uiVec2_t size) {
-
-}
-uiVec2_t uiGetCoords(uiApiContext* ctx, uiVec2_t pos) {
-
+				i2++;
+			}
+		}
+	}
 }

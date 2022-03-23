@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <SDL.h>
+#include <framework/renderer.h>
 
 typedef struct {
 	float frequency;

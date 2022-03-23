@@ -19,10 +19,20 @@ void display(Renderer renderer) {
 	SDL_RenderPresent(renderer);
 }
 
-Texture createTexture(uint32_t w, uint32_t h) {
-	
+Texture createTexture(Renderer renderer, uint32_t w, uint32_t h) {
+	return SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, w, h);
 }
 
-void updateTexture(Renderer renderer, Texture texture, uint32_t x, uint32_t y, uint32_t w, uint32_t h, void* data) {
+void updateTexture(Texture texture, uint32_t x, uint32_t y, uint32_t w, uint32_t h, void* data) {
+	SDL_Rect updateRect;
+	updateRect.x = x;
+	updateRect.y = y;
+	updateRect.w = w;
+	updateRect.h = h;
+	uint32_t dataPitch = w * sizeof(uint32_t);
+	SDL_UpdateTexture(texture, &updateRect, data, dataPitch);
+}
 
+void destroyTexture(Texture texture) {
+	SDL_DestroyTexture(texture);
 }

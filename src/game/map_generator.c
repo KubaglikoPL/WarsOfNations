@@ -58,37 +58,20 @@ void generateMap(generatedMap* map, generatorSettings* settings, uint32_t width,
 	updateRect.w = map->width;
 	updateRect.h = map->height;
 
-	//Generate texture
-	/*state.frequency = 1.0f;
-	state.octaves = settings->octaves;
-	state.gain = settings->gain;
-	state.lacunarity = settings->lacunarity;
-	state.fractal_type = FNL_FRACTAL_FBM;*/
-
-	SDL_Color* updateData = (SDL_Color*)mapData;
-	uint32_t updatePitch = map->width * 4;
-
 	for (uint32_t i = 0; i < (width * height); i++) {
 		float n = mapData[i];
-		updateData[i].g = 0;
+		map->tileData[i].g = 0;
 		if (n > 0.5f) {
-			updateData[i].r = (n * 255.0f);
-			updateData[i].b = 0;
+			map->tileData[i].r = (n * 255.0f);
+			map->tileData[i].b = 0;
 			map->tileData[i].water = false;
 		}
 		else {
-			updateData[i].r = 0;
-			updateData[i].b = 255;
+			map->tileData[i].r = 0;
+			map->tileData[i].b = 255;
 			map->tileData[i].water = true;
 		}
-		updateData[i].a = 255;
-
-		map->tileData[i].r = updateData[i].r;
-		map->tileData[i].g = updateData[i].g;
-		map->tileData[i].b = updateData[i].b;
 	}
-
-	SDL_UpdateTexture(map->texture, &updateRect, updateData, updatePitch);
 }
 
 void loadMap(generatedMap* map, uint32_t width, uint32_t height, mapTile* tileData) {
@@ -96,7 +79,7 @@ void loadMap(generatedMap* map, uint32_t width, uint32_t height, mapTile* tileDa
 
 	map->width = width;
 	map->height = height;
-	SDL_memcpy(map->tileData, tileData, map->width * map->height * sizeof(mapTile));
+	if(tileData != map->tileData) SDL_memcpy(map->tileData, tileData, map->width * map->height * sizeof(mapTile));
 
 	uint32_t updatePitch = map->width * 4;
 	SDL_Rect updateRect;
@@ -106,8 +89,8 @@ void loadMap(generatedMap* map, uint32_t width, uint32_t height, mapTile* tileDa
 	updateRect.h = map->height;
 
 	if ((map->tx_width != map->width) || (map->tx_height != map->height)) {
-		if (map->texture) SDL_DestroyTexture(map->texture);
-		map->texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, map->width, map->height);
+		if (map->texture) destroyTexture(map->texture);
+		map->texture = createTexture(renderer, map->width, map->height);
 		map->tx_width = map->width;
 		map->tx_height = map->height;
 	}
@@ -116,7 +99,8 @@ void loadMap(generatedMap* map, uint32_t width, uint32_t height, mapTile* tileDa
 		colorData[i].r = map->tileData[i].r;
 		colorData[i].g = map->tileData[i].g;
 		colorData[i].b = map->tileData[i].b;
+		colorData[i].a = 255;
 	}
 
-	SDL_UpdateTexture(map->texture, &updateRect, colorData, updatePitch);
+	updateTexture(map->texture, 0, 0, map->width, map->height, colorData);
 }
