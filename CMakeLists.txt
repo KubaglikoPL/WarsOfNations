@@ -21,7 +21,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-file(GLOB_RECURSE game_src "src/*.c" "src/*.cpp" "include/*.h" "3rd_party/stb.c")
+file(GLOB_RECURSE game_src "src/*.c" "include/*.h" "3rd_party/stb.c")
 
 add_executable(GAME ${game_src})
 
@@ -29,37 +29,37 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     target_compile_definitions(GAME PUBLIC BUILD_64BIT)
 endif()
 
-if(NOT SDL2_FETCH_CONTENT_VERSION)
-	set(SDL2_FETCH_CONTENT_VERSION release-2.0.20)
+if(NOT GLFW_FETCH_CONTENT_VERSION)
+	set(GLFW_FETCH_CONTENT_VERSION 3.3.6)
+endif()
+
+if(NOT MINIAUDIO_FETCH_CONTENT_VERSION)
+	set(MINIAUDIO_FETCH_CONTENT_VERSION 82e70f4cbe6e613c8edc0ac7b97ff3dd00f2ca27)
 endif()
 
 if(NOT EMSCRIPTEN)
-	file(GLOB_RECURSE sdl_net_src "sdl_net/*.c")
-	target_sources(GAME PUBLIC ${sdl_net_src})
-
 	include(FetchContent)
 	FetchContent_Declare(
-		SDL2
-		GIT_REPOSITORY	https://github.com/libsdl-org/SDL
-		GIT_TAG			${SDL2_FETCH_CONTENT_VERSION}
+		GLFW
+		GIT_REPOSITORY	https://github.com/glfw/glfw
+		GIT_TAG			${GLFW_FETCH_CONTENT_VERSION}
 	)
-	set(LIBC TRUE)
-	set(SDL_SHARED FALSE)
-	set(SDL_STATIC TRUE)
-	set(SDL_LIBC TRUE)
-	set(SDL_VULKAN FALSE)
-	set(SDL_METAL FALSE)
-	set(SDL_RENDER_D3D FALSE)
-	set(SDL_RENDER_METAL FALSE)
-	FetchContent_MakeAvailable(SDL2)
+	set(BUILD_SHARED_LIBS ON)
+	set(GLFW_BUILD_EXAMPLES OFF)
+	set(GLFW_BUILD_TESTS OFF)
+	set(GLFW_BUILD_DOCS OFF)
+	set(GLFW_INSTALL OFF)
+	FetchContent_MakeAvailable(GLFW)
 
-	target_include_directories(GAME PUBLIC "${sdl2_SOURCE_DIR}/include" "sdl_net")
-	if (DEBUG_BUILD)
-		target_link_libraries(GAME SDL2d)
-	else()
-		target_link_libraries(GAME SDL2)
-	endif()
-	add_dependencies(GAME SDL2-static)
+	FetchContent_Declare(
+		MINIAUDIO
+		GIT_REPOSITORY	https://github.com/mackron/miniaudio
+		GIT_TAG			${MINIAUDIO_FETCH_CONTENT_VERSION}
+	)
+	FetchContent_MakeAvailable(MINIAUDIO)
+
+	target_include_directories(GAME PUBLIC "${glfw_SOURCE_DIR}/include" "${miniaudio_SOURCE_DIR}")
+	target_link_libraries(GAME glfw3dll)
 endif()
 
 target_compile_definitions(GAME PUBLIC SDL_MAIN_HANDLED)
