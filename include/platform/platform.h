@@ -30,4 +30,16 @@ void updateTexture(Renderer renderer, Texture texture, uint32_t x, uint32_t y, u
 
 void rendererClear(Renderer renderer, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 //Audio
-bool initAudio(void);
+#define CHANNELS_AMOUNT 2
+
+#define MAX_AUDIO_SOURCES 32
+
+typedef struct audioSource {
+	bool active;
+	void* userData;
+	uint32_t type;
+	uint32_t(*getSamples)(void*, float*, uint32_t);
+} audioSource_t;
+
+bool initAudio();
+void updateAudio(audioSource_t* sources);
