@@ -23,7 +23,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 file(GLOB_RECURSE game_src "src/*.c" "include/*.h" "3rd_party/stb.c")
 
-add_executable(GAME ${game_src} )
+add_executable(GAME ${game_src}  "src/framework/texture.c")
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     target_compile_definitions(GAME PUBLIC BUILD_64BIT)

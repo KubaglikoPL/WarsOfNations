@@ -29,6 +29,8 @@ void destroyTexture(Texture texture);
 void updateTexture(Renderer renderer, Texture texture, uint32_t x, uint32_t y, uint32_t w, uint32_t h, void* data);
 
 void rendererClear(Renderer renderer, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+
+
 //Audio
 #define CHANNELS_AMOUNT 2
 
