@@ -1,6 +1,6 @@
 /*
   SDL_net:  An example cross-platform network library for use with SDL
-  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2021 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -20,7 +20,7 @@
 */
 
 /* Include normal system headers */
-#if defined(__APPLE__) && !defined(_DARWIN_C_SOURCE)
+#ifdef __APPLE__
 #define _DARWIN_C_SOURCE
 #endif
 #include <stdio.h>
@@ -30,15 +30,22 @@
 
 #if defined(__OS2__) && !defined(__EMX__)
 #include <nerrno.h>
-#else
+#elif !defined(_WIN32_WCE)
 #include <errno.h>
 #endif
 
 /* Include system network headers */
 #if defined(__WIN32__) || defined(WIN32)
 #define __USE_W32_SOCKETS
+#ifdef _WIN64
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#else
+#include <winsock.h>
+/* NOTE: windows socklen_t is signed
+ * and is defined only for winsock2. */
+typedef int socklen_t;
+#endif /* W64 */
 #include <iphlpapi.h>
 #else /* UNIX */
 #ifdef __OS2__

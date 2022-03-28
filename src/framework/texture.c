@@ -4,7 +4,7 @@
 #include <malloc.h>
 #include <string.h>
 
-fwTexture_t loadTexture(Renderer renderer, textureLoadInfo_t* loadInfos, uint32_t loadInfosAmount, uint32_t size) {
+fwTexture_t loadTexture(Renderer *renderer, textureLoadInfo_t* loadInfos, uint32_t loadInfosAmount, uint32_t size) {
 	fwTexture_t t;
 	t.w = size;
 	t.h = size;
@@ -37,7 +37,7 @@ fwTexture_t loadTexture(Renderer renderer, textureLoadInfo_t* loadInfos, uint32_
 		int x, y, comp;
 		void* data = stbi_load(loadInfo->filepath, &x, &y, &comp, 4);
 		stbrp_rect *rect = &rects[i];
-		updateTexture(renderer, t.texture, rect->x, rect->y, rect->w, rect->h, data);
+		updateTexture(renderer, &t.texture, rect->x, rect->y, rect->w, rect->h, data);
 		stbi_image_free(data);
 
 		subTexture_t* sub = &t.subTextures[i];
@@ -46,24 +46,24 @@ fwTexture_t loadTexture(Renderer renderer, textureLoadInfo_t* loadInfos, uint32_
 		sub->y = rect->y;
 		sub->w = rect->w;
 		sub->h = rect->h;
-		sub->xf = rect->x / (float)size;
-		sub->yf = rect->y / (float)size;
-		sub->wf = rect->w / (float)size;
-		sub->hf = rect->h / (float)size;
 	}
 	return t;
 }
 
-fwTexture_t loadSingleTexture(Renderer renderer, const char* filepath) {
+fwTexture_t loadSingleTexture(Renderer *renderer, const char* filepath) {
 	int x, y, comp;
 	void* data = stbi_load(filepath, &x, &y, &comp, 4);
 	fwTexture_t t;
 	t.texture = createTexture(renderer, x, y);
-	updateTexture(renderer, t.texture, 0, 0, x, y, data);
+	updateTexture(renderer, &t.texture, 0, 0, x, y, data);
 	t.w = x;
 	t.h = y;
 	t.num_subTextures = 0;
 	t.subTextures = NULL;
 	stbi_image_free(data);
 	return t;
+}
+
+texCoords_t getTexCoord(fwTexture_t* texture, uint32_t subTexture, uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
+
 }

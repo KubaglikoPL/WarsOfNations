@@ -37,6 +37,7 @@ if(NOT MINIAUDIO_FETCH_CONTENT_VERSION)
 	set(MINIAUDIO_FETCH_CONTENT_VERSION 82e70f4cbe6e613c8edc0ac7b97ff3dd00f2ca27)
 endif()
 
+target_compile_definitions(GAME PUBLIC WITHOUT_SDL)
 if(NOT EMSCRIPTEN)
 	include(FetchContent)
 	FetchContent_Declare(
@@ -67,7 +68,7 @@ target_compile_definitions(GAME PUBLIC WIN32_LEAN_AND_MEAN)
 target_include_directories(GAME PUBLIC "include" "3rd_party" "src")
 
 if(WIN32)
-	target_link_libraries(GAME imm32 winmm hid setupapi version Ws2_32 Iphlpapi)
+	target_link_libraries(GAME imm32 winmm hid setupapi version ws2_32 Iphlpapi)
 endif(WIN32)
 
 if(WIN32)

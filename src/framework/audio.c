@@ -52,19 +52,6 @@ void updateSounds(void) {
 uint32_t streamedAudioGetSamples(void* userData, float* outf, uint32_t samples) {
 	streamedSound_t* sound = (streamedSound_t*)userData;
 	stb_vorbis *vorbis = (stb_vorbis*)sound->decoder;
-	/*uint32_t out = 0;
-	if ((sound->pos + samples) > sound->sizeInSamples) {
-		out = samples;
-	}
-	else {
-		uint32_t remainingSamples = sound->sizeInSamples - sound->pos;
-		out = remainingSamples;
-	}
-	if (out != 0) {
-		stb_vorbis_get_samples_float_interleaved(vorbis, CHANNELS_AMOUNT, outf, samples * CHANNELS_AMOUNT);
-		sound->pos += out;
-	}
-	return out;*/
 	int32_t read_out = stb_vorbis_get_samples_float_interleaved(vorbis, CHANNELS_AMOUNT, outf, samples * CHANNELS_AMOUNT);
 	if (read_out == -1) return 0;
 	else {

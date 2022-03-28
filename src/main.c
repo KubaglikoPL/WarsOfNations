@@ -25,13 +25,13 @@ int main() {
 
 	//Test Audio
 	streamedSound_t sound = openStreamedSound("data/The_Mandolin_of_Azgravan.ogg");
-	playStreamedSound(&sound);
-	updateSounds();
+	//playStreamedSound(&sound);
+	//updateSounds();
 
 	while (isWindowOpen(window)) {
 		windowPollEvents(window);
 
-		rendererClear(renderer, 0, 0, 255, 255);
+		rendererClear(&renderer, 0, 0, 255, 255);
 
 		windowDisplay(window);
 	}
@@ -44,5 +44,5 @@ void loadTextures(void) {
 		{ "data/units.png", TEXTURE_UNITS }
 	};
 
-	gameTexture = loadTexture(renderer, textures, 2, 256);
+	gameTexture = loadTexture(&renderer, textures, 2, 256);
 }

@@ -17,13 +17,19 @@
   attribute vec2 aUV;
   attribute vec4 aColor;
 
+#ifdef USE_VP_MATRIX
   uniform mat4 VP_Matrix;
+#endif
 
   varying vec2 oUV;
   varying vec4 oColor;
 
   void main() {
-    gl_Position = vec2(aPos, 0.0, 1.0) * VP_Matrix;
+    #ifdef USE_VP_MATRIX
+      gl_Position = vec4(aPos, 0.0, 1.0) * VP_Matrix;
+    #else
+      gl_Position = vec4(aPos, 0.0, 1.0);
+    #endif
     oUV = aUV;
     oColor = aColor;
   }
@@ -35,8 +41,6 @@
   uniform sampler2D texture0;
 
   void main() {
-    gl_FragColor
-    oUV = aUV;
-    oColor = aColor;
+    gl_FragColor = texture2D(texture0, oUV) * oColor;
   }
 #endif
