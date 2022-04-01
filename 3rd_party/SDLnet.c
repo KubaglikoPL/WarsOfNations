@@ -20,6 +20,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+//This source file was altered from it original by Kubagliko_PL
+
 #include "SDLnetsys.h"
 #include "SDL_net.h"
 
@@ -168,7 +170,8 @@ int SDLNet_ResolveHost(IPaddress *address, const char *host, Uint16 port)
             }
         }
     }
-    address->port = SDLNet_Read16(&port);
+    Uint8* port8 = (Uint8*)&port;
+    address->port = ((Uint16)port8[0]) << 8 | ((Uint16)port8[1]);
 
     /* Return the status */
     return(retval);

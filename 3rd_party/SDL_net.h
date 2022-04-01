@@ -29,10 +29,22 @@
 #define SDLCALL
 #define SDL_FORCE_INLINE  static __inline__
 
+#include <malloc.h>
+#include <string.h>
+#include <stb_sprintf.h>
+
+#define SDL_malloc malloc
+#define SDL_free free
+#define SDL_vsnprintf stbsp_vsnprintf
+#define SDL_memcpy memcpy
+#define SDL_memset memset
+
 #include <stdint.h>
 typedef uint8_t Uint8;
 typedef uint16_t Uint16;
 typedef uint32_t Uint32;
+
+#define SDLNet_Read16(area) ((Uint16)area[0]) << 8 | ((Uint16)area[1])
 
 typedef struct SDLNet_version {
     Uint8 major;

@@ -24,6 +24,28 @@ PFNGLDELETEBUFFERSPROC glDeleteBuffers;
 PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray;
 
+PFNGLCREATESHADERPROC glCreateShader;
+PFNGLSHADERSOURCEPROC glShaderSource;
+PFNGLCOMPILESHADERPROC glCompileShader;
+PFNGLGETSHADERIVPROC glGetShaderiv;
+PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
+
+PFNGLCREATEPROGRAMPROC glCreateProgram;
+PFNGLATTACHSHADERPROC glAttachShader;
+PFNGLLINKPROGRAMPROC glLinkProgram;
+PFNGLGETPROGRAMIVPROC glGetProgramiv;
+PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog;
+PFNGLDELETESHADERPROC glDeleteShader;
+
+PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation;
+PFNGLUSEPROGRAMPROC glUseProgram;
+
+PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
+PFNGLUNIFORM1IPROC glUniform1i;
+PFNGLUNIFORM4FVPROC glUniform4fv;
+PFNGLUNIFORMMATRIX3FVPROC glUniformMatrix3fv;
+PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
+
 PFNGLCLEARPROC glClear;
 PFNGLCLEARCOLORPROC glClearColor;
 
@@ -50,8 +72,31 @@ Renderer createRenderer(Window window) {
 	glVertexAttribPointer = glGetProc("glVertexAttribPointer");
 	glEnableVertexAttribArray = glGetProc("glEnableVertexAttribArray");
 
+	glCreateShader = glGetProc("glCreateShader");
+	glShaderSource = glGetProc("glShaderSource");
+	glCompileShader = glGetProc("glCompileShader");
+	glGetShaderiv = glGetProc("glGetShaderiv");
+	glGetShaderInfoLog = glGetProc("glGetShaderInfoLog");
+
+	glCreateProgram = glGetProc("glCreateProgram");
+	glAttachShader = glGetProc("glAttachShader");
+	glLinkProgram = glGetProc("glLinkProgram");
+	glGetProgramiv = glGetProc("glGetProgramiv");
+	glGetProgramInfoLog = glGetProc("glGetProgramInfoLog");
+	glDeleteShader = glGetProc("glDeleteShader");
+
+	glBindAttribLocation = glGetProc("glBindAttribLocation");
+	glUseProgram = glGetProc("glUseProgram");
+
+	glGetUniformLocation = glGetProc("glGetUniformLocation");
+	glUniform1i = glGetProc("glUniform1i");
+	glUniform4fv = glGetProc("glUniform4fv");
+	glUniformMatrix3fv = glGetProc("glUniformMatrix3fv");
+	glUniformMatrix4fv = glGetProc("glUniformMatrix4fv");
+
 	glClear = glGetProc("glClear");
 	glClearColor = glGetProc("glClearColor");
+
 	glDrawArrays = glGetProc("glDrawArrays");
 	glDrawElements = glGetProc("glDrawElements");
 
@@ -106,5 +151,99 @@ Buffer rendererCreateBuffer(Renderer *renderer, uint32_t VBO_Size, uint32_t EBO_
 		renderer->activeEBO = buffer.EBO;
 	}
 	return buffer;
+}
+
+#include <stdio.h>
+
+Shader createShader(const char* vertexShader, const char* fragmentShader, const char** defines, uint32_t numDefines) {
+	Shader s;
+	s.program = 0;
+
+	uint32_t vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	uint32_t fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	const char** strings = alloca((3 + numDefines) * sizeof(const char*));
+	strings[0] = "#version 120";
+	for (uint32_t i = 0; i < numDefines; i++) {
+		strings[i + 1] = defines[i];
+	}
+
+	FILE* v_file = fopen(vertexShader, "r");
+	FILE* f_file = fopen(fragmentShader, "r");
+	if (v_file && f_file) {
+		fseek(v_file, 0, SEEK_END);
+		fseek(f_file, 0, SEEK_END);
+
+		uint32_t v_size = ftell(v_file);
+		uint32_t f_size = ftell(f_file);
+
+		fseek(v_file, 0, SEEK_SET);
+		fseek(f_file, 0, SEEK_SET);
+
+		char* v_data = alloca(v_size + 1);
+		char* f_data = alloca(f_size + 1);
+
+		fread(v_data, 1, v_size, v_file);
+		fread(f_data, 1, f_size, f_file);
+
+		v_data[v_size] = 0;
+		f_data[f_size] = 0;
+
+		int success;
+		char infoLog[512];
+
+		strings[numDefines + 1] = "#define VERTEX_SHADER";
+		strings[numDefines + 2] = v_data;
+		glShaderSource(vertexShaderID, 2 + numDefines, strings, NULL);
+		glCompileShader(vertexShaderID);
+		glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			memset(infoLog, 0, 512);
+			glGetShaderInfoLog(vertexShaderID, 512, NULL, infoLog);
+			setLastError(infoLog);
+			return s;
+		}
+
+		strings[numDefines + 1] = "#define FRAGMENT_SHADER";
+		strings[numDefines + 2] = f_data;
+		glShaderSource(fragmentShaderID, 2 + numDefines, strings, NULL);
+		glCompileShader(fragmentShaderID);
+		glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			memset(infoLog, 0, 512);
+			glGetShaderInfoLog(fragmentShaderID, 512, NULL, infoLog);
+			setLastError(infoLog);
+			return s;
+		}
+
+		uint32_t program = glCreateProgram();
+		glAttachShader(program, vertexShaderID);
+		glAttachShader(program, fragmentShaderID);
+		glLinkProgram(program);
+		glGetProgramiv(program, GL_LINK_STATUS, &success);
+		if (!success) {
+			memset(infoLog, 0, 512);
+			glGetProgramInfoLog(program, 512, NULL, infoLog);
+			setLastError(infoLog);
+			return s;
+		}
+
+		s.program = program;
+	}
+
+	glDeleteShader(vertexShaderID);
+	glDeleteShader(fragmentShaderID);
+	
+	glBindAttribLocation(s.program, 0, "aPos");
+	glBindAttribLocation(s.program, 1, "aUV");
+	glBindAttribLocation(s.program, 2, "aColor");
+
+	return s;
+}
+
+void renderGeometry(Renderer* renderer, Buffer* buffer, Shader* shader, Texture* texture, uint32_t num, uint32_t off) {
+	if (buffer && shader) {
+		
+	}
 }
 #endif

@@ -8,27 +8,25 @@
 #define TILE_UNIT 8
 
 #pragma pack(push, 1)
-typedef struct {
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
+typedef struct tile {
+	uint16_t height;
 	uint8_t flags;
 	uint8_t player;
-} tile;
+} tile_t;
 #pragma pack(pop)
 
-typedef struct {
+typedef struct mapResource {
 	uint16_t x, y;
 	uint32_t type;
-} mapResource;
+} mapResource_t;
 
-typedef struct {
+typedef struct map {
 	uint16_t w, h;
 
 	uint32_t tilesSize;
-	tile* tiles;
+	tile_t* tiles;
 
 	uint32_t resourcesSize;
 	uint32_t resourcesAmount;
-	mapResource* resources;
-} map;
+	mapResource_t* resources;
+} map_t;

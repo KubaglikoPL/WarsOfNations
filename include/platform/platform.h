@@ -21,6 +21,13 @@
 
 #endif
 
+//Common
+#define MAX_ERROR_LENGTH 1024
+
+const char* getLastError(void);
+void setLastError(const char* e);
+bool thereIsLastError(void);
+
 //Window, Events and stuff
 bool initPlatform(void);
 
@@ -37,6 +44,10 @@ void updateTexture(Renderer *renderer, Texture *texture, uint32_t x, uint32_t y,
 
 void rendererClear(Renderer *renderer, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 Buffer rendererCreateBuffer(Renderer *renderer, uint32_t VBO_Size, uint32_t EBO_Size, bool shortIndicies, bool dynamicBuffer);
+
+Shader createShader(const char* vertexShader, const char* fragmentShader, const char** defines, uint32_t numDefines);
+
+void renderGeometry(Renderer* renderer, Buffer* buffer, Shader* shader, Texture* texture, uint32_t num, uint32_t off);
 
 //Audio
 #define CHANNELS_AMOUNT 2
@@ -63,7 +74,7 @@ int32_t socketSend(Socket* sock, void* data, uint32_t dataSize);
 int32_t socketRecv(Socket* sock, void* data, uint32_t dataSize);
 
 SocketSelector createSocketSelector(uint32_t maxSockets);
-void addSocket(SocketSelector* selector, Socket* sock);
-void delSocket(SocketSelector* selector, Socket* sock);
+bool addSocket(SocketSelector* selector, Socket* sock);
+bool delSocket(SocketSelector* selector, Socket* sock);
 void checkSockets(SocketSelector* selector);
 bool isSocketReady(Socket* sock);

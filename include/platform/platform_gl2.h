@@ -19,5 +19,10 @@ typedef struct glRenderer {
 	uint32_t activeProgram;
 } glRenderer_t;
 
+typedef struct glShader {
+	uint32_t program;
+} glShader_t;
+
 #define Renderer glRenderer_t
 #define Buffer gl2Buffers_t
+#define Shader glShader_t

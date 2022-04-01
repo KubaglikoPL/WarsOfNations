@@ -88,6 +88,11 @@ typedef void (APIENTRYP PFNGLUNIFORM4FVPROC)(GLint location, GLsizei count, cons
 typedef void (APIENTRYP PFNGLUNIFORMMATRIX3FVPROC)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 typedef void (APIENTRYP PFNGLUNIFORMMATRIX4FVPROC)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 
+#define GL_FRAGMENT_SHADER 0x8B30
+#define GL_VERTEX_SHADER 0x8B31
+#define GL_COMPILE_STATUS 0x8B81
+#define GL_LINK_STATUS 0x8B82
+
 //Rendering
 typedef void (APIENTRYP PFNGLCLEARPROC)(GLbitfield mask);
 typedef void (APIENTRYP PFNGLCLEARCOLORPROC)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);

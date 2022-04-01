@@ -21,9 +21,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-file(GLOB_RECURSE game_src "src/*.c" "include/*.h" "3rd_party/stb.c")
+file(GLOB_RECURSE game_src "src/*.c" "include/*.h" "3rd_party/stb.c" "3rd_party/SDLnet.c" "3rd_party/SDLnetTCP.c" "3rd_party/SDLnetselect.c")
 
-add_executable(GAME ${game_src}  "src/framework/texture.c")
+add_executable(GAME ${game_src}  "src/framework/texture.c" "src/game/protocol.c")
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     target_compile_definitions(GAME PUBLIC BUILD_64BIT)
