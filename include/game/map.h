@@ -30,3 +30,20 @@ typedef struct map {
 	uint32_t resourcesAmount;
 	mapResource_t* resources;
 } map_t;
+
+typedef struct mapGenerator {
+	uint16_t w, h;
+} mapGenerator_t;
+
+#include <platform/platform.h>
+
+typedef struct mapTexture {
+	uint16_t tx_w, tx_h;
+	Texture texture;
+} mapTexture_t;
+
+void loadTerrainTexture(const char *filepath);
+map_t createMap(void);
+mapTexture_t createMapTexture(void);
+void generateMap(map_t* map, mapGenerator_t *settings);
+void updateMapTexture(Renderer *renderer, mapTexture_t* texture, map_t* map);

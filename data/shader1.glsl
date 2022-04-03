@@ -38,9 +38,15 @@
   varying vec2 oUV;
   varying vec4 oColor;
 
+#ifdef USE_TEXTURE
   uniform sampler2D texture0;
+#endif
 
   void main() {
-    gl_FragColor = texture2D(texture0, oUV) * oColor;
+	#ifdef USE_TEXTURE
+		gl_FragColor = texture2D(texture0, oUV) * oColor;
+	#else
+		gl_FragColor = oColor;
+	#endif
   }
 #endif

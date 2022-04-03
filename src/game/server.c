@@ -90,7 +90,15 @@ void serverProcessEvent(server_t* server, packet_t* packet, uint32_t connectionI
 		p.name = realloc(p.name, info->nameSize + 1);
 		memset(p.name, 0, info->nameSize);
 		memcpy(p.name, &packet->data[sizeof(connectionInfo_t)], info->nameSize);
-		//TODO add Player
+		if (server->nextPlayerID != MAX_CLIENT_CONNECTIONS) {
+			server->players[server->nextPlayerID].connectionID = connectionID;
+			server->players[server->nextPlayerID].player = p;
+			server->players[server->nextPlayerID].ready = false;
+			server->nextPlayerID = MAX_CLIENT_CONNECTIONS;
+			for (uint32_t i = 0; i < MAX_CLIENT_CONNECTIONS; i++) {
+				if (server->players[i].connectionID == INVALID_ID) server->nextPlayerID = i;
+			}
+		}
 	}
 	if (playerID != INVALID_ID) {
 

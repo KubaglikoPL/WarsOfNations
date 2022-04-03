@@ -36,6 +36,17 @@ bool isWindowOpen(Window window);
 void windowDisplay(Window window);
 void windowPollEvents(Window window);
 //Rendering
+#pragma pack(push, 1)
+typedef struct vertex {
+	float x, y;
+	uint16_t u, v;
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+	uint8_t a;
+} vertex_t;
+#pragma pack(pop)
+
 Renderer createRenderer(Window window);
 
 Texture createTexture(Renderer *renderer, uint32_t w, uint32_t h);
@@ -44,6 +55,9 @@ void updateTexture(Renderer *renderer, Texture *texture, uint32_t x, uint32_t y,
 
 void rendererClear(Renderer *renderer, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 Buffer rendererCreateBuffer(Renderer *renderer, uint32_t VBO_Size, uint32_t EBO_Size, bool shortIndicies, bool dynamicBuffer);
+void updateVertexBuffer(Renderer* renderer, Buffer* buffer, vertex_t* v, uint32_t vNum, uint32_t off);
+void updateIndexBuffer(Renderer* renderer, Buffer* buffer, uint32_t* i, uint32_t iNum, uint32_t off);
+void updateIndexBuffer16(Renderer* renderer, Buffer* buffer, uint16_t* i, uint32_t iNum, uint32_t off);
 
 Shader createShader(const char* vertexShader, const char* fragmentShader, const char** defines, uint32_t numDefines);
 

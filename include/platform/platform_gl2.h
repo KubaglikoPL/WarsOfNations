@@ -21,6 +21,8 @@ typedef struct glRenderer {
 
 typedef struct glShader {
 	uint32_t program;
+	int32_t texture0_location;
+	int32_t VP_location;
 } glShader_t;
 
 #define Renderer glRenderer_t
